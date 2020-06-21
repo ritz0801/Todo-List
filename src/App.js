@@ -1,24 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import './style/index.scss';
+import "antd/dist/antd.css";
+import TodoForm from './components/TodoForm/TodoForm';
+import TodoList from './components/TodoList/TodoList';
 
 function App() {
+  const todoStorage = JSON.parse(localStorage.getItem("todoList"));
+  const [todoList, setTodoList] = useState(todoStorage ? todoStorage : []);
+
+  const handleSubmit = (todo) => {
+    const newTodo = [...todoList];
+    newTodo.unshift(todo);
+    setTodoList(newTodo);
+    localStorage.setItem("todoList", JSON.stringify(newTodo));
+  }
+
+  const handleRemove = (todo) => {
+    let newTodo = [...todoList];
+    newTodo = newTodo.filter((item) => {
+      return item.title.toLowerCase() !== todo.title.toLowerCase();
+    })
+    setTodoList(newTodo);
+    localStorage.setItem("todoList", JSON.stringify(newTodo));
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ textAlign: 'center' }} className="App">
+      <h1>Todo List</h1>
+      <TodoForm handleSubmit={handleSubmit} />
+      <TodoList todoList={todoList} handleRemove={handleRemove} />
     </div>
   );
 }
